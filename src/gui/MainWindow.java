@@ -232,4 +232,18 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JTextArea textArea;
     private javax.swing.JLabel threshold;
     // End of variables declaration//GEN-END:variables
+    private void printMatrix(int [][] matrix) {
+        textArea.setText("");
+        for (int[] row : matrix) {
+            for (int j = 0; j < row.length; j++) {
+                if (row[j] <= slider.getValue()) {
+                    textArea.append("-   ");
+                } else {
+                    textArea.append(row[j] + "   ");
+                }
+            }
+            textArea.append("\n");
+        }
+        
+    }
 }
