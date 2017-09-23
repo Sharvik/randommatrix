@@ -5,11 +5,15 @@
  */
 package gui;
 
+import java.util.Random;
+
 /**
  *
  * @author Geraldo
  */
 public class MainWindow extends javax.swing.JFrame {
+
+    private int[][] matrix;
 
     /**
      * Creates new form MainWindow
@@ -41,27 +45,33 @@ public class MainWindow extends javax.swing.JFrame {
         textArea = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Matrix Generator");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         dimTextField.setText("10");
-        dimTextField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                dimTextFieldActionPerformed(evt);
+        dimTextField.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                dimTextFieldCaretUpdate(evt);
             }
         });
 
         minTextField.setText("50");
-        minTextField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                minTextFieldActionPerformed(evt);
+        minTextField.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                minTextFieldCaretUpdate(evt);
             }
         });
 
         maxTextField.setText("120");
-        maxTextField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                maxTextFieldActionPerformed(evt);
+        maxTextField.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                maxTextFieldCaretUpdate(evt);
             }
         });
 
@@ -71,9 +81,14 @@ public class MainWindow extends javax.swing.JFrame {
         slider.setMinorTickSpacing(1);
         slider.setPaintLabels(true);
         slider.setPaintTicks(true);
-        slider.setSnapToTicks(true);
         slider.setToolTipText("");
         slider.setValue(86);
+        slider.setName("Pene"); // NOI18N
+        slider.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                sliderMouseReleased(evt);
+            }
+        });
 
         dimension.setText("Dimension:");
 
@@ -93,8 +108,8 @@ public class MainWindow extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(threshold)
                         .addGap(40, 40, 40)
-                        .addComponent(slider, javax.swing.GroupLayout.PREFERRED_SIZE, 447, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 83, Short.MAX_VALUE))
+                        .addComponent(slider, javax.swing.GroupLayout.DEFAULT_SIZE, 447, Short.MAX_VALUE)
+                        .addGap(83, 83, 83))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(dimension)
@@ -126,7 +141,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(slider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(threshold))
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -149,7 +164,7 @@ public class MainWindow extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 389, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -171,17 +186,51 @@ public class MainWindow extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void minTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_minTextFieldActionPerformed
+    private void dimTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_dimTextFieldCaretUpdate
+        if(dimTextField.getText().equals("")) 
+            textArea.setText("");
+        else {
+            matrix = createMatrix();
+            printMatrix(matrix);
+        }
+    }//GEN-LAST:event_dimTextFieldCaretUpdate
 
-    private void dimTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dimTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_dimTextFieldActionPerformed
+    private void minTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_minTextFieldCaretUpdate
+        if(minTextField.getText().equals(""))
+            textArea.setText("");
+        else {
+            matrix = createMatrix();
+            printMatrix(matrix);
+            slider.setMinimum(getInt(minTextField));
+            int interval = getInt(maxTextField) - getInt(minTextField) + 1;
+            slider.setMajorTickSpacing(interval/14);
+            slider.setMinorTickSpacing(interval/4);
+            slider.setValue(interval/2 + getInt(minTextField));
+        }
+    }//GEN-LAST:event_minTextFieldCaretUpdate
 
-    private void maxTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maxTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_maxTextFieldActionPerformed
+    private void maxTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_maxTextFieldCaretUpdate
+        if(maxTextField.getText().equals(""))
+            textArea.setText("");
+        else {
+            matrix = createMatrix();
+            printMatrix(matrix);
+            slider.setMaximum(getInt(maxTextField));
+            int interval = getInt(maxTextField) - getInt(minTextField) + 1;
+            slider.setMajorTickSpacing(interval/14);
+            slider.setMinorTickSpacing(interval/4);
+            slider.setValue(interval/2 + getInt(minTextField));
+        }
+    }//GEN-LAST:event_maxTextFieldCaretUpdate
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        matrix = createMatrix();
+        printMatrix(matrix);
+    }//GEN-LAST:event_formWindowOpened
+
+    private void sliderMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sliderMouseReleased
+        printMatrix(matrix);
+    }//GEN-LAST:event_sliderMouseReleased
 
     /**
      * @param args the command line arguments
@@ -246,4 +295,23 @@ public class MainWindow extends javax.swing.JFrame {
         }
         
     }
+    
+    private int getInt(javax.swing.JTextField textField) {
+        return Integer.parseInt(textField.getText());
+    }
+    
+    private int[][] createMatrix() {
+        int[][] randomMatrix = new int[getInt(dimTextField)][getInt(dimTextField)];
+        Random random = new Random();
+        for (int i = 0; i < randomMatrix.length; i++) {
+            for (int j = 0; j < randomMatrix[i].length; j++) {
+                randomMatrix[i][j] = random.nextInt(
+                                getInt(maxTextField) - getInt(minTextField) + 1);
+            }
+        }
+        return randomMatrix;
+    }
+    
+    
+    
 }
