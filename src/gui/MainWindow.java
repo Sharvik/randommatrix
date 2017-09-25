@@ -299,22 +299,16 @@ public class MainWindow extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        
+        //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new MainWindow().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new MainWindow().setVisible(true);
         });
     }
 
@@ -355,11 +349,11 @@ public class MainWindow extends javax.swing.JFrame {
     private int[][] createMatrix() {
         int[][] randomMatrix = new int[getInt(dimTextField)][getInt(dimTextField)];
         Random random = new Random();
-        for (int i = 0; i < randomMatrix.length; i++) {
-            for (int j = 0; j < randomMatrix[i].length; j++) {
-                randomMatrix[i][j] = random.nextInt(
-                                getInt(maxTextField) - getInt(minTextField))
-                                + getInt(minTextField);
+        for (int[] row : randomMatrix) {
+            for (int j = 0; j < row.length; j++) {
+                row[j] = random.nextInt(
+                        getInt(maxTextField) - getInt(minTextField))
+                        + getInt(minTextField);
             }
         }
         return randomMatrix;
